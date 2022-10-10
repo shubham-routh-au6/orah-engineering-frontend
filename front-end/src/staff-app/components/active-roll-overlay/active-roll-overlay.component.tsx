@@ -3,15 +3,23 @@ import styled from "styled-components"
 import Button from "@material-ui/core/Button"
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
+import { Person } from "shared/models/person"
 
 export type ActiveRollAction = "filter" | "exit"
 interface Props {
   isActive: boolean
   onItemClick: (action: ActiveRollAction, value?: string) => void
+  studentDCopy: Person[]
+  studentData: Person[]
+  setStudentData: React.Dispatch<React.SetStateAction<Person[]>>
 }
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
-  const { isActive, onItemClick } = props
+  const { isActive, onItemClick, studentDCopy, studentData, setStudentData } = props
+
+  let presentCount = studentDCopy.filter((d) => d.attendance === "present")
+  let lateCount = studentDCopy.filter((d) => d.attendance === "late")
+  let absentCount = studentDCopy.filter((d) => d.attendance === "absent")
 
   return (
     <S.Overlay isActive={isActive}>
@@ -19,11 +27,14 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
         <div>Class Attendance</div>
         <div>
           <RollStateList
+            studentDCopy={studentDCopy}
+            studentData={studentData}
+            setStudentData={setStudentData}
             stateList={[
-              { type: "all", count: 0 },
-              { type: "present", count: 0 },
-              { type: "late", count: 0 },
-              { type: "absent", count: 0 },
+              { type: "all", count: studentDCopy.length },
+              { type: "present", count: presentCount.length },
+              { type: "late", count: lateCount.length },
+              { type: "absent", count: absentCount.length },
             ]}
           />
           <div style={{ marginTop: Spacing.u6 }}>
